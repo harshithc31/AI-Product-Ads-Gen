@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-Product-Ads-Gen
 
-## Getting Started
+An AI-powered tool to generate high-quality product ad images and short product videos from a user-uploaded product image and a short description. The backend uses ImageKit for image hosting, Google Gemini (Gemini text models) for prompt generation, Imagen for image generation, and Imagen Video (if available) for video generation. Firestore is used to track user requests and store metadata. The project is built with Next.js (App Router) and TypeScript.
 
-First, run the development server:
+## Features
 
-```bash
+Upload a product image and description.
+
+Generate a stylized product ad image using Google's Imagen model.
+
+Generate a short product video (image → video) using Imagen Video (if enabled for your API key).
+
+Stores original and generated assets on ImageKit.
+
+Stores request metadata in Firestore (user-ads collection).
+
+Basic rate/plan handling via Firestore user records (fallback defaults included).
+
+## Tech stack
+
+Next.js (App Router)
+
+TypeScript
+
+Node.js
+
+Firebase Firestore
+
+ImageKit (image hosting)
+
+Google @google/generative-ai (Gemini, Imagen, Imagen Video)
+
+ImageKit SDK
+
+Axios / fetch
+
+## How it works (high level)
+
+Frontend uploads an image + description to /api/generate-product-image (multipart/form-data).
+
+Server uploads the original image to ImageKit to get a stable URL.
+
+Server calls Gemini (text model) to generate JSON prompts { textToImage, imageToVideo }.
+
+Server calls Imagen (image model) with textToImage to generate a final ad image (base64).
+
+Server uploads generated image to ImageKit and updates Firestore (user-ads doc) with URLs, status.
+
+Optionally call imagen-video-001 / Veo (if available) to convert the generated image → short video using imageToVideo prompt.
+
+## Prerequisites
+
+Node.js v18+
+
+NPM or Yarn
+
+Google account with access to Google AI Studio / Generative AI API (Gemini + Imagen + Imagen Video access)
+
+ImageKit account (public & private keys + URL endpoint)
+
+Firebase project with Firestore enabled
+
+Git and GitHub account
+
+(Optional) Vercel account for easy Next.js deployment
+
+## Quickstart (local development)
+
+### 1. Clone the repository:
+
+git clone https://github.com/{your-username}/{your-repo}.git
+cd {your-repo}
+
+### 2. Install dependencies:
+
+npm install
+or
+pnpm install
+yarn
+
+### 3. Copy .env.example (or create .env.local) and add your secrets.
+
+### 4. Start dev server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+default: http://localhost:3000
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 5. Test the main endpoint locally (example using curl):
+curl -X POST "http://localhost:3000/api/generate-product-image" \
+-F "file=@/path/to/product.png" \
+-F "description=Fresh citrus hand wash" \
+-F "size=1024x1024" \
+-F "userEmail=you@example.com"
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## HAPPY CODING!
